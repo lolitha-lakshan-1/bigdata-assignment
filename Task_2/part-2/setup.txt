@@ -1,0 +1,12 @@
+pip install pandas kafka-python
+pip3 install pandas kafka-python 
+
+python traffic_producer.py
+python3 traffic_producer.py
+
+
+docker exec -it kafka kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic traffic.raw \
+  --group traffic-backend-service
+

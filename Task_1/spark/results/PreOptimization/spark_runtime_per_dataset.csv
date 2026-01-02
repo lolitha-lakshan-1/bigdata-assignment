@@ -1,0 +1,5 @@
+dataset,start_ts,end_ts,duration_sec
+Email-EuAll,1767075374,1767075378,4
+cit-Patents,1767075378,1767075394,16
+soc-LiveJournal1,1767075394,1767075431,37
+soc-pokec-relationships,1767075431,1767075449,18

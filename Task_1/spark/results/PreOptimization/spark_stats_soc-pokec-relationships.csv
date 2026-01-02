@@ -1,0 +1,7 @@
+dataset,timestamp,container,cpu,mem,mem_pct,net_io,blk_io,pids
+soc-pokec-relationships,1767075431,spark-master,214.84%,379.6MiB / 3.828GiB,9.69%,514kB / 1.23MB,67.7MB / 2.87MB,78
+soc-pokec-relationships,1767075431,spark-worker,0.05%,202.7MiB / 3.828GiB,5.17%,1.24MB / 512kB,29.2MB / 206MB,52
+soc-pokec-relationships,1767075437,spark-master,1.29%,487.2MiB / 3.828GiB,12.43%,538kB / 1.38MB,67.7MB / 3.02MB,128
+soc-pokec-relationships,1767075437,spark-worker,776.39%,1.383GiB / 3.828GiB,36.12%,1.38MB / 536kB,29.2MB / 206MB,115
+soc-pokec-relationships,1767075445,spark-master,1.71%,489.7MiB / 3.828GiB,12.49%,571kB / 1.44MB,67.7MB / 3.02MB,132
+soc-pokec-relationships,1767075445,spark-worker,383.22%,1.38GiB / 3.828GiB,36.05%,1.48MB / 587kB,29.2MB / 207MB,117

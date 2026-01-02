@@ -1,0 +1,3 @@
+dataset,timestamp,container,cpu,mem,mem_pct,net_io,blk_io,pids
+Email-EuAll,1767075374,spark-master,218.97%,399.8MiB / 3.828GiB,10.20%,7.46kB / 2.2kB,65.1MB / 98.3kB,76
+Email-EuAll,1767075374,spark-worker,118.06%,291.1MiB / 3.828GiB,7.43%,8.36kB / 7.02kB,28.8MB / 65.5kB,74

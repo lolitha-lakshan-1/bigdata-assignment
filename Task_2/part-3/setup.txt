@@ -1,0 +1,17 @@
+pip install pandas kafka-python psycopg2-binary
+pip3 install pandas kafka-python psycopg2-binary
+
+python traffic_processor.py
+python3 traffic_processor.py
+
+python traffic_producer.py
+python3 traffic_producer.py
+
+
+docker exec -it kafka kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic traffic.raw \
+  --group traffic-backend-service
+
+
+docker network rm traffic-net

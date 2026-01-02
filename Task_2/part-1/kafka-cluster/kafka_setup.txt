@@ -1,0 +1,107 @@
+docker compose up -d
+
+docker compose down
+docker rm -f kafka
+docker rm -f kafka-exporter
+docker rm -f prometheus
+docker rm -f grafana
+docker rm -f zookeeper
+docker rm -f kafka-connect
+
+
+
+docker exec kafka sh -lc '
+  cd /opt/kafka/bin &&
+  ./kafka-topics.sh --create \
+    --topic traffic.raw \
+    --bootstrap-server localhost:9092 \
+    --partitions 3 \
+    --replication-factor 1 \
+  || echo "traffic.raw already exists"'
+
+docker exec kafka sh -lc '
+  cd /opt/kafka/bin &&
+  ./kafka-topics.sh --create \
+    --topic traffic.processed \
+    --bootstrap-server localhost:9092 \
+    --partitions 3 \
+    --replication-factor 1 \
+  || echo "traffic.processed already exists"'
+
+
+docker exec -it kafka kafka-console-consumer \
+  --bootstrap-server kafka:29092 \
+  --topic traffic.raw \
+  --group traffic-demo \
+  --from-beginning \
+  --timeout-ms 300000
+
+
+# 6) start consumer (terminal 1)
+docker exec -it kafka sh -lc 'cd /opt/kafka/bin && ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic traffic.raw --from-beginning'
+
+
+# 7) produce messages (terminal 2)
+docker exec -it kafka sh -lc 'cd /opt/kafka/bin && ./kafka-console-producer.sh --bootstrap-server localhost:9092 --topic traffic.raw'
+
+{"sensorId":"A1","speed":52,"ts":"2025-12-31T23:30:00+05:30"}
+{"sensorId":"A1","speed":61,"ts":"2025-12-31T23:30:05+05:30"}
+{"sensorId":"B7","speed":44,"ts":"2025-12-31T23:30:10+05:30"}
+
+
+docker exec kafka sh -lc '
+  cd /opt/kafka/bin &&
+  ./kafka-topics.sh --list --bootstrap-server localhost:9092
+'
+
+docker exec kafka sh -lc '
+  cd /opt/kafka/bin &&
+  ./kafka-topics.sh --describe --topic traffic.raw --bootstrap-server localhost:9092
+'
+
+Grafana Setpu 
+
+mkdir -p grafana/provisioning/datasources grafana/provisioning/dashboards grafana/dashboards
+
+
+cat > grafana/provisioning/datasources/datasource.yml <<'EOF'
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+EOF
+
+cat > grafana/provisioning/dashboards/dashboards.yml <<'EOF'
+apiVersion: 1
+providers:
+  - name: Kafka
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
+EOF
+
+curl -L -o grafana/dashboards/kafka_exporter_overview.json \
+  https://raw.githubusercontent.com/danielqsj/kafka_exporter/master/kafka_exporter_overview.json
+
+
+
+
+======
+Docker compose ps
+
+
+for i in {1..1000}; do 
+  echo "sensor_data $i" | docker exec -i kafka kafka-console-producer --bootstrap-server localhost:9092 --topic traffic.raw
+done
+
+docker exec -it kafka kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic traffic.raw \
+  --group traffic-backend-service

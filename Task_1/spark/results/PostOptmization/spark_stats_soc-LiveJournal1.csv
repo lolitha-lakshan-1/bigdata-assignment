@@ -1,0 +1,11 @@
+dataset,timestamp,container,cpu,mem,mem_pct,net_io,blk_io,pids
+soc-LiveJournal1,1767075729,spark-master,243.73%,442MiB / 3.828GiB,11.28%,1.09MB / 2.59MB,68.1MB / 5.69MB,112
+soc-LiveJournal1,1767075729,spark-worker,0.04%,222.4MiB / 3.828GiB,5.67%,2.59MB / 1.09MB,29.2MB / 209MB,55
+soc-LiveJournal1,1767075736,spark-master,14.40%,501.8MiB / 3.828GiB,12.80%,1.12MB / 2.75MB,68.1MB / 5.69MB,132
+soc-LiveJournal1,1767075736,spark-worker,788.76%,1.363GiB / 3.828GiB,35.61%,2.74MB / 1.12MB,29.2MB / 209MB,122
+soc-LiveJournal1,1767075744,spark-master,0.72%,519.4MiB / 3.828GiB,13.25%,1.15MB / 2.82MB,68.1MB / 5.83MB,135
+soc-LiveJournal1,1767075744,spark-worker,781.74%,1.41GiB / 3.828GiB,36.85%,2.82MB / 1.15MB,29.2MB / 209MB,122
+soc-LiveJournal1,1767075750,spark-master,3.64%,520.7MiB / 3.828GiB,13.29%,1.2MB / 2.94MB,68.1MB / 5.83MB,134
+soc-LiveJournal1,1767075750,spark-worker,768.68%,1.413GiB / 3.828GiB,36.92%,2.93MB / 1.19MB,29.2MB / 281MB,122
+soc-LiveJournal1,1767075758,spark-master,1.57%,521.4MiB / 3.828GiB,13.30%,1.24MB / 3MB,68.1MB / 5.83MB,134
+soc-LiveJournal1,1767075758,spark-worker,664.13%,1.433GiB / 3.828GiB,37.43%,3.01MB / 1.24MB,29.2MB / 281MB,122

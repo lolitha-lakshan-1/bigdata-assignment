@@ -1,0 +1,7 @@
+dataset,timestamp,container,cpu,mem,mem_pct,net_io,blk_io,pids
+cit-Patents,1767075713,spark-master,228.51%,427.8MiB / 3.828GiB,10.91%,879kB / 2.07MB,68.1MB / 4.84MB,98
+cit-Patents,1767075713,spark-worker,0.05%,222MiB / 3.828GiB,5.66%,2.07MB / 878kB,29.2MB / 208MB,54
+cit-Patents,1767075720,spark-master,0.60%,501MiB / 3.828GiB,12.78%,902kB / 2.22MB,68.1MB / 4.84MB,130
+cit-Patents,1767075720,spark-worker,794.30%,1.373GiB / 3.828GiB,35.86%,2.22MB / 901kB,29.2MB / 208MB,117
+cit-Patents,1767075727,spark-master,2.06%,504MiB / 3.828GiB,12.86%,947kB / 2.32MB,68.1MB / 5.61MB,134
+cit-Patents,1767075727,spark-worker,778.63%,1.101GiB / 3.828GiB,28.76%,2.32MB / 946kB,29.2MB / 209MB,122

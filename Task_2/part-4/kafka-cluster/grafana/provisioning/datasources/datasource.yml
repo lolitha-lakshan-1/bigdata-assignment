@@ -1,0 +1,25 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    uid: prometheus
+
+  - name: PostgreSQL
+    type: postgres
+    uid: traffic_postgres_db
+    access: proxy
+    url: postgres:5432
+    user: user
+    database: traffic_db
+    
+    jsonData:
+      sslmode: "disable"
+      postgresVersion: 15
+      timescaledb: false
+
+    secureJsonData:
+      password: "password"

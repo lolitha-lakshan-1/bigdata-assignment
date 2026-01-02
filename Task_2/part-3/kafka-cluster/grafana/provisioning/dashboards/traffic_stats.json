@@ -1,0 +1,43 @@
+{
+  "id": null,
+  "uid": "kafka-traffic-stats",
+  "title": "Traffic Cluster Stats",
+  "refresh": "5s",
+  "panels": [
+    {
+      "title": "Incoming Message Rate (Per Sec)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (topic) (rate(kafka_topic_partition_current_offset{topic=~\"traffic.*\"}[1m]))",
+          "legendFormat": "{{topic}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "pps" } }
+    },
+    {
+      "title": "Total Messages Processed",
+      "type": "stat",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (topic) (kafka_topic_partition_current_offset{topic=~\"traffic.*\"})",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "title": "Consumer Lag (Backlog)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 9 },
+      "targets": [
+        {
+          "expr": "sum by (consumergroup, topic) (kafka_consumergroup_lag{topic=~\"traffic.*\"})",
+          "legendFormat": "{{consumergroup}} - {{topic}}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 16
+}

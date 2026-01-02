@@ -1,0 +1,4 @@
+javac NormalizeStats.java
+
+java NormalizeStats --in hadoop_stats.csv --out hadoop_normalized.csv --framework HADOOP --step 5
+java NormalizeStats --in spark_stats.csv  --out spark_normalized.csv  --framework SPARK  --step 5

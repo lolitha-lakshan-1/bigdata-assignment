@@ -1,0 +1,83 @@
+version: "3.8"
+
+services:
+  zookeeper-task4:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper-task4
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+    networks:
+      - task4-streaming-net
+
+  kafka-task4:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-task4
+    restart: unless-stopped
+    depends_on:
+      - zookeeper-task4
+    ports:
+      - "19092:19092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-task4:2181
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://kafka-task4:9092,EXTERNAL://0.0.0.0:19092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-task4:9092,EXTERNAL://localhost:19092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks:
+      - task4-streaming-net
+
+  flink-jobmanager-task4:
+    image: flink:1.19.0-scala_2.12-java11
+    container_name: flink-jobmanager-task4
+    restart: unless-stopped
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager-task4
+    networks:
+      - task4-streaming-net
+
+  flink-taskmanager-task4:
+    image: flink:1.19.0-scala_2.12-java11
+    container_name: flink-taskmanager-task4
+    restart: unless-stopped
+    depends_on:
+      - flink-jobmanager-task4
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager-task4
+        taskmanager.numberOfTaskSlots: 2
+    networks:
+      - task4-streaming-net
+
+  postgres-task4:
+    image: postgres:16
+    container_name: postgres-task4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bigdata-task-4
+      POSTGRES_USER: bigdata
+      POSTGRES_PASSWORD: bigdata
+    ports:
+      - "5432:5432"
+    networks:
+      - task4-streaming-net
+
+networks:
+  task4-streaming-net:
+    driver: bridge

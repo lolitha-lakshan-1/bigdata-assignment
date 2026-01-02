@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.gradleup.shadow' version '8.3.9'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    flinkVersion = '1.19.0'
+    flinkConnectorVersion = '3.3.0-1.19'
+}
+
+dependencies {
+
+    compileOnly "org.apache.flink:flink-streaming-java:${flinkVersion}"
+    compileOnly "org.apache.flink:flink-clients:${flinkVersion}"
+
+    implementation "org.apache.flink:flink-connector-kafka:${flinkConnectorVersion}"
+    implementation "org.apache.flink:flink-connector-jdbc:${flinkConnectorVersion}"
+
+    implementation "org.postgresql:postgresql:42.7.3"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+}
+
+application {
+    mainClass = 'HashtagCountJob'
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'HashtagCountJob'
+        )
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 11
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('shadowJar') {
+    archiveBaseName.set('flink-hashtag-task4')
+    archiveClassifier.set('all')
+}

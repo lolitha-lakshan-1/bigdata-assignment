@@ -1,0 +1,176 @@
+Destory Kafka
+============
+docker compose down
+docker volume rm $(docker volume ls -q | grep -E 'task4|kafka')
+docker compose up -d
+
+
+** Add task 4 folder structure screen shot
+
+List And Create Kafka Topics
+==============================
+docker exec -it kafka-task4 \
+  kafka-topics \
+    --bootstrap-server kafka-task4:9092 \
+    --list
+
+
+docker exec -it kafka-task4 \
+  kafka-topics \
+    --bootstrap-server kafka-task4:9092 \
+    --create \
+    --topic twitter.topic \
+    --partitions 1 \
+    --replication-factor 1
+
+
+docker exec -it kafka-task4 \
+  kafka-topics \
+    --bootstrap-server kafka-task4:9092 \
+    --create \
+    --topic tiktok.topic \
+    --partitions 1 \
+    --replication-factor 1
+
+
+docker exec -it kafka-task4 \
+  kafka-topics \
+    --bootstrap-server kafka-task4:9092 \
+    --create \
+    --topic twitter.topic-partition-2 \
+    --partitions 2 \
+    --replication-factor 1
+
+
+docker exec -it kafka-task4 \
+  kafka-topics \
+    --bootstrap-server kafka-task4:9092 \
+    --create \
+    --topic tiktok.topic-partition-2 \
+    --partitions 2 \
+    --replication-factor 1
+
+docker exec -it kafka-task4 \
+  kafka-configs \
+    --bootstrap-server kafka-task4:9092 \
+    --alter \
+    --topic tiktok.topic \
+    --add-config retention.ms=0
+
+Send Data To Kafka Topics
+============================
+
+tail -n +2 "TikTok-datasets.csv" | docker exec -i kafka-task4 \
+  kafka-console-producer \
+  --bootstrap-server kafka-task4:9092 \
+  --topic tiktok.topic
+
+tail -n +2 "TikTok-datasets.csv" | docker exec -i kafka-task4 \
+  kafka-console-producer \
+  --bootstrap-server kafka-task4:9092 \
+  --topic tiktok.topic-partition-2
+
+tail -n +2 "Twitter- datasets.csv" | docker exec -i kafka-task4 \
+  kafka-console-producer \
+  --bootstrap-server kafka-task4:9092 \
+  --topic twitter.topic
+
+tail -n +2 "Twitter- datasets.csv" | docker exec -i kafka-task4 \
+  kafka-console-producer \
+  --bootstrap-server kafka-task4:9092 \
+  --topic twitter.topic-partition-2
+
+
+CREATE SQL TABLE 
+=================
+docker exec -it postgres-task4 \
+  psql -U bigdata -d bigdata-task-4
+
+CREATE TABLE IF NOT EXISTS hashtag_results (
+    flink_job_id        TEXT        NOT NULL,
+    time_window         TIMESTAMP   NOT NULL,
+    processdatetimemillis TIMESTAMP NOT NULL,
+    raw_event_count     BIGINT      NOT NULL,
+    hashtag_event_count BIGINT      NOT NULL
+);
+
+SELECT * FROM hashtag_results
+SELECT * FROM hashtag_results WHERE hashtag_event_count > 0;
+
+
+COPY THE KAFKA CONNECTOR AND CLIENT
+===================================
+
+Gradle Version : Gradle 9.2.1
+gradle clean shadowJar
+
+docker logs flink-taskmanager-task4 | tail -n 200
+docker logs flink-jobmanager-task4 | tail -n 200
+
+curl -L \
+  https://repo1.maven.org/maven2/org/apache/flink/flink-connector-kafka/3.3.0-1.19/flink-connector-kafka-3.3.0-1.19.jar \
+  -o flink-connector-kafka-3.3.0-1.19.jar
+
+curl -L \
+  https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.0/kafka-clients-3.4.0.jar \
+  -o kafka-clients-3.4.0.jar
+
+docker cp flink-connector-kafka-3.3.0-1.19.jar \
+  flink-jobmanager-task4:/opt/flink/lib/
+
+docker cp kafka-clients-3.4.0.jar \
+  flink-jobmanager-task4:/opt/flink/lib/
+
+docker cp flink-connector-kafka-3.3.0-1.19.jar \
+  flink-taskmanager-task4:/opt/flink/lib/
+
+docker cp kafka-clients-3.4.0.jar \
+  flink-taskmanager-task4:/opt/flink/lib/
+
+docker compose restart flink-jobmanager-task4 flink-taskmanager-task4
+
+RUN THE JOBS
+============
+HashtagCountJob
+--jobType "TWITTER" --jobId "first_run"
+
+--jobType "TIKTOK" --jobId "first_run"
+
+
+HashtagCountParallelJob
+
+--jobType "TWITTER" --jobId "partition-2-1"
+--jobType "TIKTOK" --jobId "partition-2-1"
+
+# TaskManager ID
+curl -s http://localhost:8081/taskmanagers | jq -r '.taskmanagers[] | .id'
+
+# Job ID(s)
+curl -s http://localhost:8081/jobs/overview | jq -r '.jobs[] | "\(.jid) \(.name) \(.state)"'
+
+# Vertex IDs for a given JOB_ID
+JOB_ID=238a005fd5eb753db293a3d0debb58c2
+curl -s http://localhost:8081/jobs/$JOB_ID | jq -r '.vertices[] | "\(.id) \(.name)"'
+
+if [ -z "$TM_ID" ] || [ -z "$JOB_ID" ] || [ -z "$VERTEX_ID" ]; then
+
+sh monitor_flink.sh 172.22.0.6:38337-e0c170 238a005fd5eb753db293a3d0debb58c2 cbc357ccb763df2852fee8c4fc7d55f2
+
+
+
+
+JOB_ID=5933e2c892451b8e33b007c1b58075d0
+VERTEX_ID=cbc357ccb763df2852fee8c4fc7d55f2
+
+curl -s "http://localhost:8081/jobs/238a005fd5eb753db293a3d0debb58c2/vertices/cbc357ccb763df2852fee8c4fc7d55f2/subtasks/metrics?get=numRecordsIn,numRecordsOut,numRecordsOutPerSecond"
+
+
+
+docker rm -f zookeeper-task4
+docker rm -f kafka-task4
+docker rm -f flink-jobmanager-task4
+docker rm -f flink-taskmanager-task4
+docker rm -f postgres-task4
+
+
+
