@@ -1,3 +1,6 @@
+Requires GRadle 9
+
+
 Destory Kafka
 ============
 docker compose down
